@@ -3,6 +3,7 @@ mod tokenizer;
 mod token;
 mod parser;
 mod ast;
+mod utils;
 
 use tokenizer::*;
 

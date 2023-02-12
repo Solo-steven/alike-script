@@ -1,14 +1,7 @@
 use std::collections::HashSet;
-
 use crate::token::Token;
+use crate::utils::Position;
 mod test;
-
-#[derive(Debug, PartialEq, Clone)]
-pub struct Position {
-    row: usize, 
-    col: usize,
-}
-
 pub struct Tokenizer {
     code: String,
     index: usize,

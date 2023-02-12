@@ -1,10 +1,4 @@
-
-use crate::tokenizer::Position;
-
-struct Location {
-    start: Position,
-    end: Position
-}
+use crate::utils::Location;
 /**
  * Entry Structures
  */
