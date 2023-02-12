@@ -1,0 +1,22 @@
+\documentclass{article}
+\usepackage{listings}
+
+\lstset{
+  basicstyle=\itshape,
+  xleftmargin=3em,
+  literate={->}{$\rightarrow$}{2}
+           {α}{$\alpha$}{1}
+           {δ}{$\delta$}{1}
+}
+
+\begin{document}
+\noindent Example of a simple grammar:
+\begin{lstlisting}
+S -> α | B
+  -> A 
+B -> C
+C -> D | δ
+\end{lstlisting}
+Note that the rules ``\lstinline{S -> α | B}\,'' and
+``\lstinline{C -> D | δ}\,'' involve terminals.
+\end{document}
