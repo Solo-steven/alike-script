@@ -132,6 +132,53 @@ mod test {
         assert_eq!(tokenizer.next_token(), Token::Identifier(String::from("m")));
         assert_eq!(tokenizer.next_token(), Token::Semi);
         assert_eq!(tokenizer.next_token(), Token::BracesRight);
-        assert_eq!(tokenizer.next_token(), Token::EOF)
+        assert_eq!(tokenizer.next_token(), Token::EOF);
+    }
+    #[test]
+    fn test_variable_declaration_tokenize() {
+        let mut tokenizer = Tokenizer::new(String::from("
+            var test number 
+        "));
+        assert_eq!(tokenizer.next_token(), Token::VarKeyword);
+        assert_eq!(tokenizer.next_token(), Token::Identifier(String::from("test")));
+        assert_eq!(tokenizer.next_token(), Token::NumberKeyword);
+        assert_eq!(tokenizer.next_token(), Token::EOF);
+    }
+    #[test]
+    fn test_block_statement_tokenize() {
+        let mut tokenizer = Tokenizer::new(String::from("
+            {
+                {
+
+                }
+            }
+        "));
+        assert_eq!(tokenizer.next_token(), Token::BracesLeft);
+        assert_eq!(tokenizer.next_token(), Token::BracesLeft);
+        assert_eq!(tokenizer.next_token(), Token::BracesRight);
+        assert_eq!(tokenizer.next_token(), Token::BracesRight);
+        assert_eq!(tokenizer.next_token(), Token::EOF);
+    }
+    /***************************************************************************
+     *  Test Declaration Tokenize
+     * *************************************************************************
+     */
+    #[test]
+    fn test_function_declaration_tokenize() {
+        let mut tokenizer = Tokenizer::new(String::from("
+            function Test(a: number) {
+            }
+        "));
+        assert_eq!(tokenizer.next_token(), Token::FunctionKeyword);
+        assert_eq!(tokenizer.next_token(), Token::Identifier(String::from("Test")));
+        assert_eq!(tokenizer.next_token(), Token::ParenthesesLeft);
+        assert_eq!(tokenizer.next_token(), Token::Identifier(String::from("a")));
+        assert_eq!(tokenizer.next_token(), Token::Colon);
+        assert_eq!(tokenizer.next_token(), Token::NumberKeyword);
+        assert_eq!(tokenizer.next_token(), Token::ParenthesesRight);
+        assert_eq!(tokenizer.next_token(), Token::BracesLeft);
+        assert_eq!(tokenizer.next_token(), Token::BracesRight);
+        assert_eq!(tokenizer.next_token(), Token::EOF);
+
     }
 }

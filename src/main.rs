@@ -7,15 +7,20 @@ mod utils;
 
 use tokenizer::*;
 
-use std::collections::HashSet;
-
 fn main() {
-    let mut tokenizer = Tokenizer::new(String::from("  
-        var id number;
+    // let mut tokenizer = Tokenizer::new(String::from("  
+    //     a + b + c
+    // "));
+    // let a: HashSet<u16> = vec![1,2,3,4].into_iter().collect();
+    // println!("{:?}", tokenizer.next_token());
+    // println!("{:?}", tokenizer.next_token());
+    // println!("{:?}", tokenizer.next_token());
+    // println!("{:?}", tokenizer.next_token());
+    // println!("{:?}", tokenizer.next_token());
+
+    let mut parser = parser::Parser::new(String::from("
+          test(a+b, c ,d * 8)
+
     "));
-    let a: HashSet<u16> = vec![1,2,3,4].into_iter().collect();
-    println!("{:?}", tokenizer.next_token());
-    println!("{:?}", tokenizer.next_token());
-    println!("{:?}", tokenizer.next_token());
-    println!("{:?}", tokenizer.next_token());
+    println!("{:?}", parser.parse_program());
 }

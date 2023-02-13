@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "toy-lang-in-rust"
+name = "alike-script"
 version = "0.1.0"

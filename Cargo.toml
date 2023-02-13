@@ -1,5 +1,5 @@
 [package]
-name = "toy-lang-in-rust"
+name = "alike-script"
 version = "0.1.0"
 edition = "2021"
 

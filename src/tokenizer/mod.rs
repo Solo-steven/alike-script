@@ -6,7 +6,12 @@ pub struct Tokenizer {
     code: String,
     index: usize,
     position: Position,
-    current_token: Option<Token>
+    current_token: Option<Token>,
+
+    start_index: usize,
+    end_index: usize,
+    start_position: Position,
+    end_position: Position,
 }
 
 impl Tokenizer {
@@ -15,7 +20,12 @@ impl Tokenizer {
             code,
             index: 0,
             position: Position { row: 0, col: 0 },
-            current_token: None
+            current_token: None,
+
+            start_index: 0,
+            end_index: 0,
+            start_position: Position { row: 0, col: 0 },
+            end_position: Position { row: 0, col: 0 },
         }
     }
     pub fn next_token(&mut self) -> Token {
@@ -92,9 +102,18 @@ impl Tokenizer {
             }
         }   
     }
+    fn start_token(&mut self) {
+        self.start_index = self.index;
+        self.start_position = self.get_position()
+    }
+    fn end_token(&mut self) {
+        self.end_index = self.index;
+        self.end_position = self.get_position()
+    }
     fn toknize(&mut self) -> Token {
         self.skip_space_and_change_line();
         let current_char = self.get_char();
+        self.start_token();
         return match current_char {
             None => {
                 Token::EOF
@@ -104,50 +123,62 @@ impl Tokenizer {
                     // Punctations
                     ';' => {
                         self.eat_char(1);
+                        self.end_token();
                         Token::Semi
                     }
                     ',' => {
                         self.eat_char(1);
+                        self.end_token();
                         Token::Comma
                     }
                     ':' => {
                         self.eat_char(1);
+                        self.end_token();
                         Token::Colon
                     }
                     '#' => {
                         self.eat_char(1);
+                        self.end_token();
                         Token::HashTag
                     }
                     '{' => {
                         self.eat_char(1);
+                        self.end_token();
                         Token::BracesLeft
                     }
                     '}' => {
                         self.eat_char(1);
+                        self.end_token();
                         Token::BracesRight
                     }
                     '[' => {
                         self.eat_char(1);
+                        self.end_token();
                         Token::BracketLeft
                     }
                     ']' => {
                         self.eat_char(1);
+                        self.end_token();
                         Token::BracketRight
                     }
                     '(' => {
                         self.eat_char(1);
+                        self.end_token();
                         Token::ParenthesesLeft
                     }
                     ')' => {
                         self.eat_char(1);
+                        self.end_token();
                         Token::ParenthesesRight
                     }
                     '.' => {
                         self.eat_char(1);
+                        self.end_token();
                         Token::Dot
                     }
                     '?' => {
                         self.eat_char(1);
+                        self.end_token();
                         Token::Qustion   
                     }
                     '\'' => {
@@ -167,9 +198,11 @@ impl Tokenizer {
                         self.read_divide()
                     }
                     '*' => {
+                        self.eat_char(1);
                         Token::Multply
                     }
                     '%' => {
+                        self.eat_char(1);
                         Token::Mod
                     }
                     '=' => {
@@ -342,7 +375,7 @@ impl Tokenizer {
             '{', '}',
             '[', ']',
             '(', ')',
-            ';', '.', ':',
+            ';', '.', ':', ',',
             // Operator
             '+', '/', '*', '%','=', '|', '&',
             '<', '>',
@@ -385,6 +418,9 @@ impl Tokenizer {
             }
             "var" => {
                 Token::VarKeyword
+            }
+            "function" => {
+                Token::FunctionKeyword
             }
             "number" => {
                 Token::NumberKeyword
