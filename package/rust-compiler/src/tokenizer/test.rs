@@ -72,7 +72,7 @@ mod test {
         assert_eq!(tokenizer.next_token(), Token::StringLiteral(String::from(" Test String Literal XD ")));
     }
     #[test]
-    #[should_panic]
+    #[should_panic(expected="[Error]: String Literal Start and End Quotation is Not Same")]
     fn test_string_should_failed() {
         let mut tokenizer = Tokenizer::new(String::from("\' Test String Literal XD \""));
         assert_eq!(tokenizer.next_token(), Token::StringLiteral(String::from(" Test String Literal XD ")));

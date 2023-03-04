@@ -19,7 +19,10 @@ fn main() {
     // println!("{:?}", tokenizer.next_token());
 
     let mut parser = parser::Parser::new(String::from("
-          test(a+b, c ,d * 8)
+         c + test(a+b, c ,d * 8) * c
+         if(c == 4) {
+            
+         }
 
     "));
     println!("{:?}", parser.parse_program());

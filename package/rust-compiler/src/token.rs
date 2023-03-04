@@ -53,7 +53,7 @@ pub enum Token {
     BoolLiteral(bool),      // true or false
     StringLiteral(String),  // String Data type
     NumberLiteral(f64),     // float64
-    NullLiteral,            // null Value
+    //NullLiteral,            // null Value
     // EOF
     EOF,            
 }

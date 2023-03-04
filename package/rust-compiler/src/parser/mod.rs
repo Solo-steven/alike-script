@@ -1,8 +1,9 @@
 use crate::Tokenizer;
 use crate::token::{Token, get_pre_of_binary_op, get_text_of_binary_op, is_binary_op};
 use crate::ast::*;
+mod test;
 pub struct  Parser {
-    tokenizer: Tokenizer
+    tokenizer: Tokenizer,
 }
 impl Parser {
     pub fn new(code: String) -> Parser{
@@ -505,7 +506,7 @@ impl Parser {
                     value
                 })
             }
-            Token::NullLiteral => {
+            Token::NullKeyword => {
                 self.tokenizer.next_token();
                 Expression::Null(NullLiteral {})
             }
