@@ -8,8 +8,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       # Install LLVM 15 for inkwell and llvm-sys
-      - run: apt update
-      - run: apt install -y llvm-15
-      - run: echo "export LLVM_SYS_150_PREFIX="/lib/llvm-15"" > ~/.bashrc
-      - run: source ~/.bashrc
-      - run: echo $LLVM_SYS_150_PREFIX
+      - run: sudo apt update
+      - run: sudo apt install -y llvm-15
+      - run: sudo echo "export LLVM_SYS_150_PREFIX="/lib/llvm-15"" > ~/.bashrc
+      - run: sudo source ~/.bashrc
+      - run: sudo echo $LLVM_SYS_150_PREFIX
