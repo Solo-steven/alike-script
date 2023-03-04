@@ -1,10 +1,10 @@
 name: rust-compiler-test
 on:
   push:
-    branch: ["master"]
+    branches: ["master"]
 jobs:
   test-echo:
-    run-on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - run: echo "test content"
       
