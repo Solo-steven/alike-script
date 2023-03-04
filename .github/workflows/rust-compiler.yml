@@ -11,5 +11,5 @@ jobs:
       - run: sudo apt update
       - run: sudo apt install -y llvm-15
       - run: sudo echo "export LLVM_SYS_150_PREFIX="/lib/llvm-15"" > ~/.bashrc
-      - run: sudo source ~/.bashrc
+      - run: source ~/.bashrc
       - run: sudo echo $LLVM_SYS_150_PREFIX
