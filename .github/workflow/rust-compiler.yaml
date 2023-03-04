@@ -1,0 +1,10 @@
+name: rust-compiler-test
+on:
+  push:
+    branch: ["master"]
+jobs:
+  test-echo:
+    run-on: ubuntu-latest
+    steps:
+      - run: echo "test content"
+      
