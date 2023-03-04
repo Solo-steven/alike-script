@@ -52,6 +52,13 @@ class Program {
     public:
     std::vector<std::unique_ptr<ProgramItem>> body;
     void print() {
+        std::cout << "Program(body[";
+        for(int i = 0 ; i < body.size() ; ++i) {
+            body[i]->print();
+            if(i != body.size()-1)
+                std::cout << ",";
+        }
+        std::cout << "])";
     }
     
 };
