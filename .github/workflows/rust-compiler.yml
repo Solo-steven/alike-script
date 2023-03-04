@@ -1,11 +1,10 @@
 name: rust-compiler
 on:
   push:
-    branches: ["master"]
+    branches: ["master", "ci/add-rust-test"]
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - run: ls
       - run: pwd
-      
