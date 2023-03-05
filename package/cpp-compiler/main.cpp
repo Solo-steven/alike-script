@@ -13,7 +13,7 @@ int main() {
             break;
         }
     }
-    auto parser = std::make_unique<Parser>("a = (a+b)*c/d ");
+    auto parser = std::make_unique<Parser>("a +b ");
     auto item = parser->parse();
     item->print();
     return 0;

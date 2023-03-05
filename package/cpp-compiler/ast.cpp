@@ -12,6 +12,19 @@ enum Type {
     String,
     Null,
 };
+// helper function
+std::string type_to_string(Type t) {
+    switch(t) {
+    case Type::Number:
+        return std::string("Number");
+    case Type::Bool:
+        return std::string("Bool");
+    case Type::String:
+        return std::string("String");
+    default:
+        return std::string("");
+    }
+}
 class ProgramItem {
     public:
     virtual void print(){
@@ -237,7 +250,23 @@ class CallExpression: public Expression {
 /**
  *  Delaration
 */
-class VariableDelaration: public Declaration {};
+class VariableDelaration: public Declaration {
+    public:
+    std::string name;
+    Type type;
+    std::unique_ptr<Expression> init;
+    VariableDelaration(std::string name, Type type, std::unique_ptr<Expression> init):
+        name(name), type(type), init(std::move(init)) {}
+    void print() {
+        std::cout << "VariableDeclaration(name:"<<name<<",type:" << type_to_string(type);
+        if(init.get() == nullptr) {
+            std::cout << ",init:()";
+        }else {
+            std::cout << ".init(" << init->toString() << ")";
+        }
+        std::cout << ")";
+    }
+};
 class FunctionDeclaration: public Declaration {};
 class FunctionParam {};
 /**
