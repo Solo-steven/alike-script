@@ -13,7 +13,7 @@ int main() {
             break;
         }
     }
-    auto parser = std::make_unique<Parser>("var a number = v +b");
+    auto parser = std::make_unique<Parser>("{ a+b/c var n number }");
     auto item = parser->parse();
     item->print();
     return 0;

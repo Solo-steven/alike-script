@@ -258,13 +258,28 @@ class VariableDelaration: public Declaration {
     VariableDelaration(std::string name, Type type, std::unique_ptr<Expression> init):
         name(name), type(type), init(std::move(init)) {}
     void print() {
-        std::cout << "VariableDeclaration(name:"<<name<<",type:" << type_to_string(type);
+        std::cout << "VariableDeclaration(name:("<<name<<"),type:(" << type_to_string(type) << ")";
         if(init.get() == nullptr) {
             std::cout << ",init:()";
         }else {
             std::cout << ".init(" << init->toString() << ")";
         }
         std::cout << ")";
+    }
+    std::string toString() {
+        char format_str[] = "VariableDelcaration(name:(%s),type:(%s),init:(%s))";
+        size_t length = std::snprintf(
+            nullptr, 0, format_str, 
+            name.c_str(), type_to_string(type).c_str(), init.get() == nullptr ? "": init->toString().c_str()
+        );
+        char *char_buffer = new char[length+1];
+        std::snprintf(
+            char_buffer, length+1, format_str,
+            name.c_str(), type_to_string(type).c_str(), init.get() == nullptr ? "": init->toString().c_str()
+        );
+        std::string std_str(char_buffer);
+        delete[] char_buffer;
+        return std_str;
     }
 };
 class FunctionDeclaration: public Declaration {};
@@ -273,7 +288,25 @@ class FunctionParam {};
  * Statement 
 */
 class WhileStatement: public Statement {};
-class BlockStatement: public Statement {};
+class BlockStatement: public Statement {
+    public:
+    std::vector<std::unique_ptr<ProgramItem>> body;
+    BlockStatement(std::vector<std::unique_ptr<ProgramItem>> body): body(std::move(body)) {}
+    void print() {
+        std::cout << "BlockStatement(body:[";
+        for(int i = 0 ; i < body.size() ; ++i) {
+            std::cout << body[i]->toString();
+        } 
+        std::cout << "])";
+    }
+    std::string toString() {
+        std::string std_str;
+        for(int i = 0 ; i < body.size() ; ++i) {
+            std_str.append(body[i]->toString());
+        }
+        return std_str;
+    }
+};
 class IfStatement: public Statement {};
 class ReturnStatement: public Statement {};
 } // End Namesacpe AST

@@ -37,16 +37,23 @@ class Parser {
                 // }
                 // case TokenKinds::ReturnKeyword: {
                 // } 
+                case TokenKinds::BracesLeft: {
+                    return parse_block_statement();
+                }
                 case TokenKinds::VarKeyword: {
                     return parse_variable_declaration();
                 }
-                // case TokenKinds::FunctionKeyword: {
-                // } 
+                case TokenKinds::FunctionKeyword: {
+                } 
                 default : {
                     return parse_expression();
                 }
             }
         }
+/** =============================================================
+ *  Declaration
+ * ==============================================================
+*/
         std::unique_ptr<AST::VariableDelaration> parse_variable_declaration() {
             if(tokenizer->get_token() != TokenKinds::VarKeyword) {
                 throw "";
@@ -78,6 +85,33 @@ class Parser {
             }
             return std::make_unique<AST::VariableDelaration>(name, type, nullptr);
         }
+/** =========================================================
+ *  Statement
+ * ==========================================================
+*/
+    std::unique_ptr<AST::BlockStatement> parse_block_statement() {
+        if(tokenizer->get_token() != TokenKinds::BracesLeft) {
+            throw "";
+        }
+        tokenizer->next_token();
+        std::vector<std::unique_ptr<AST::ProgramItem>> body;
+        while(
+            tokenizer->get_token() != TokenKinds::BracesRight && 
+            tokenizer->get_token() != TokenKinds::EOFToken
+        ) {
+            auto program_item = parse_program_item();
+            body.push_back(std::move(program_item));
+        }
+        if(tokenizer->get_token() == TokenKinds::EOFToken) {
+            throw "";
+        }
+        tokenizer->next_token();
+        return std::make_unique<AST::BlockStatement>(std::move(body));
+    }
+/** =========================================================
+ *  Expression
+ * ==========================================================
+*/
         std::unique_ptr<AST::Expression> parse_expression() {
             // TODO
             auto expr =  parse_assigment_expression();
