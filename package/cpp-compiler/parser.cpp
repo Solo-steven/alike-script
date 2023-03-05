@@ -37,14 +37,46 @@ class Parser {
                 // }
                 // case TokenKinds::ReturnKeyword: {
                 // } 
-                // case TokenKinds::VarKeyword: {
-                // }
+                case TokenKinds::VarKeyword: {
+                    return parse_variable_declaration();
+                }
                 // case TokenKinds::FunctionKeyword: {
                 // } 
                 default : {
                     return parse_expression();
                 }
             }
+        }
+        std::unique_ptr<AST::VariableDelaration> parse_variable_declaration() {
+            if(tokenizer->get_token() != TokenKinds::VarKeyword) {
+                throw "";
+            }
+            tokenizer->next_token();
+            if(tokenizer->get_token() != TokenKinds::Identifier) {
+                throw "";
+            }
+            std::string name = tokenizer->get_value();
+            tokenizer->next_token();
+            AST::Type type;
+            switch(tokenizer->get_token()) {
+            case TokenKinds::NumberKeyword:
+                type = AST::Type::Number;
+                break;
+            case TokenKinds::StringKeyword:
+                type = AST::Type::String;
+                break;
+            case TokenKinds::BoolKeyword:
+                type = AST::Type::Bool;
+            default:
+                throw "";
+            }
+            tokenizer->next_token();
+            if(tokenizer->get_token() == TokenKinds::Assign) {
+                tokenizer->next_token();
+                auto expr = parse_expression();
+                return std::make_unique<AST::VariableDelaration>(name, type, std::move(expr));
+            }
+            return std::make_unique<AST::VariableDelaration>(name, type, nullptr);
         }
         std::unique_ptr<AST::Expression> parse_expression() {
             // TODO

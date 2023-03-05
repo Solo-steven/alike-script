@@ -33,6 +33,9 @@ class Tokenizer {
             }
             return code[position.index];
         }
+        bool is_eof() {
+            return get_char() == EOF;
+        }
         bool is_char(char ch) {
             char current = get_char();
             return current == ch;
@@ -59,7 +62,10 @@ class Tokenizer {
             return value;
         }
         void skip() {
-            while(get_char() == ' ' || get_char() == '\t' || is_char('\n') ) {
+            while(
+                ! is_eof() &&
+                (get_char() == ' ' || get_char() == '\t' || is_char('\n'))
+            ) {
                 eat_char(1);
             }
         }
@@ -399,11 +405,13 @@ class Tokenizer {
             };
             std::string word;
             while(
+                ! is_eof() &&
                 !(is_char(' ')  || is_char('\t') || is_char('\n')) &&
                 !( is_char_set(char_set) )
             ) {
                 word += eat_char(1);
             }
+            std::cout << "Word:" << word << std::endl;
             // Keywords
             if(word == "while") {
                 currentToken = TokenKinds::WhileKeyword;

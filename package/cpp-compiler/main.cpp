@@ -4,7 +4,7 @@
 #include <typeinfo>
 #include "parser.cpp"
 int main() {
-    auto tokenizer = std::make_unique<Tokenizer>("a = a+b*c/d ");
+    auto tokenizer = std::make_unique<Tokenizer>("var a number");
     while(1) {
         auto token = tokenizer->next_token();
         if(token != TokenKinds::EOFToken) {
@@ -13,7 +13,7 @@ int main() {
             break;
         }
     }
-    auto parser = std::make_unique<Parser>("a +b ");
+    auto parser = std::make_unique<Parser>("var a number = v +b");
     auto item = parser->parse();
     item->print();
     return 0;
