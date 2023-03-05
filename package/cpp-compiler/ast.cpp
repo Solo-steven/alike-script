@@ -28,7 +28,7 @@ std::string type_to_string(Type t) {
 class ProgramItem {
     public:
     virtual void print(){
-        std::cout << "ProgramItem" << std::endl;
+        std::cout << "ProgramItem";
     }
     virtual std::string toString() {
         return std::string("ProgramItem");
@@ -37,7 +37,7 @@ class ProgramItem {
 class Statement: public ProgramItem {
     public:
     virtual void print(){
-        std::cout << "Statement" << std::endl;
+        std::cout << "Statement";
     }
     virtual std::string toString() {
         return std::string("Statement");
@@ -46,7 +46,7 @@ class Statement: public ProgramItem {
 class Declaration: public ProgramItem {
     public:
     virtual void print(){
-        std::cout << "Declaration" << std::endl;
+        std::cout << "Declaration";
     }
     virtual std::string toString() {
         return std::string("Declaration");
@@ -55,7 +55,7 @@ class Declaration: public ProgramItem {
 class Expression: public ProgramItem {
     public:
     virtual void print(){
-        std::cout << "Expression" << std::endl;
+        std::cout << "Expression";
     }
     virtual std::string toString() {
         return std::string("Expression");
@@ -248,6 +248,31 @@ class CallExpression: public Expression {
         std::vector<std::unique_ptr<Expression>> params;
 };
 /**
+ * Statement 
+*/
+class WhileStatement: public Statement {};
+class BlockStatement: public Statement {
+    public:
+    std::vector<std::unique_ptr<ProgramItem>> body;
+    BlockStatement(std::vector<std::unique_ptr<ProgramItem>> body): body(std::move(body)) {}
+    void print() {
+        std::cout << "BlockStatement(body:[";
+        for(int i = 0 ; i < body.size() ; ++i) {
+            std::cout << body[i]->toString();
+        } 
+        std::cout << "])";
+    }
+    std::string toString() {
+        std::string std_str;
+        for(int i = 0 ; i < body.size() ; ++i) {
+            std_str.append(body[i]->toString());
+        }
+        return std_str;
+    }
+};
+class IfStatement: public Statement {};
+class ReturnStatement: public Statement {};
+/**
  *  Delaration
 */
 class VariableDelaration: public Declaration {
@@ -282,33 +307,46 @@ class VariableDelaration: public Declaration {
         return std_str;
     }
 };
-class FunctionDeclaration: public Declaration {};
-class FunctionParam {};
-/**
- * Statement 
-*/
-class WhileStatement: public Statement {};
-class BlockStatement: public Statement {
+class FunctionParam {
     public:
-    std::vector<std::unique_ptr<ProgramItem>> body;
-    BlockStatement(std::vector<std::unique_ptr<ProgramItem>> body): body(std::move(body)) {}
+    std::string name;
+    Type return_type;
+    FunctionParam(std::string name, Type return_type): name(name), return_type(return_type) {}
     void print() {
-        std::cout << "BlockStatement(body:[";
-        for(int i = 0 ; i < body.size() ; ++i) {
-            std::cout << body[i]->toString();
-        } 
-        std::cout << "])";
+        std::cout << "param(name:("<<name<<"),type:("<<type_to_string(return_type)<<"))";
     }
     std::string toString() {
-        std::string std_str;
-        for(int i = 0 ; i < body.size() ; ++i) {
-            std_str.append(body[i]->toString());
-        }
+        char format_str[] = "param(name:(%s),type:(%s))";
+        size_t length = std::snprintf(nullptr, 0 , format_str, name.c_str(), type_to_string(return_type).c_str());
+        char *char_buffer = new char[length+1];
+        std::snprintf(char_buffer, length+1, format_str, name.c_str(), type_to_string(return_type).c_str());
+        std::string std_str(char_buffer);
+        delete[] char_buffer;
         return std_str;
     }
 };
-class IfStatement: public Statement {};
-class ReturnStatement: public Statement {};
+class FunctionDeclaration: public Declaration {
+    public:
+    std::string name;
+    std::vector<std::unique_ptr<FunctionParam>> params;
+    std::unique_ptr<BlockStatement> body;
+    Type return_type;
+    FunctionDeclaration(
+        std::string name, Type type,
+        std::vector<std::unique_ptr<FunctionParam>> params,
+        std::unique_ptr<BlockStatement> body
+    ): name(name), return_type(type), params(std::move(params)), body(std::move(body)) {}
+
+    void print() {
+        std::cout << "FunctionDeclaration(name:("<<name<<"),"<<"return_type:("<<type_to_string(return_type)<<"),params:[";
+        for(int i = 0 ; i< params.size() ; ++i ){
+            params[i]->print();
+            if(i != params.size()-1)
+                std::cout << ",";
+        }
+        std::cout<< "],body:["<< body->toString() << "]";
+    }
+};
 } // End Namesacpe AST
 
 

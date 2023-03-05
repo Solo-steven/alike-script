@@ -44,6 +44,7 @@ class Parser {
                     return parse_variable_declaration();
                 }
                 case TokenKinds::FunctionKeyword: {
+                    return parse_function_declaration();
                 } 
                 default : {
                     return parse_expression();
@@ -85,13 +86,90 @@ class Parser {
             }
             return std::make_unique<AST::VariableDelaration>(name, type, nullptr);
         }
+        std::unique_ptr<AST::FunctionDeclaration> parse_function_declaration() {
+            if(tokenizer->get_token() != TokenKinds::FunctionKeyword) {
+                throw "[Error]: function Delcaration must start with function keyword";
+            }
+            tokenizer->next_token();
+            if(tokenizer->get_token() != TokenKinds::Identifier) {
+                throw "[Error]: function delcaration must has a name.";
+            }
+            std::string name = std::string(tokenizer->get_value());
+            tokenizer->next_token();
+            if(tokenizer->get_token() != TokenKinds::ParenthesesLeft) {
+                throw "[Error]: function declaration must has param list";
+            }
+            tokenizer->next_token();
+            std::vector<std::unique_ptr<AST::FunctionParam>> params;
+            while(
+                tokenizer->get_token() != TokenKinds::ParenthesesRight &&
+                tokenizer->get_token() != TokenKinds::EOFToken 
+            ) {
+                params.push_back(parse_function_param());
+                if(tokenizer->get_token() == TokenKinds::Comma) {
+                    tokenizer->next_token();
+                }
+            }
+            if(tokenizer->get_token() == TokenKinds::EOFToken) {
+                throw "[Error]: function params expected end with ParenthesesRight, but got EOF";
+            }
+            tokenizer->next_token();
+            if(tokenizer->get_token() != TokenKinds::Colon) {
+                throw "[Error]: function expected a return type";
+            }
+            tokenizer->next_token();
+            AST::Type type;
+            switch(tokenizer->get_token()) {
+            case TokenKinds::NumberKeyword:
+                type = AST::Type::Number;
+                break;
+            case TokenKinds::StringKeyword:
+                type = AST::Type::String;
+                break;
+            case TokenKinds::BoolKeyword:
+                type = AST::Type::Bool;
+                break;
+            default:
+                throw "[Error] function declaration must has a type";
+            }
+            tokenizer->next_token();
+            auto body = parse_block_statement();
+            return std::make_unique<AST::FunctionDeclaration>(name, type, std::move(params), std::move(body));
+        }
+        std::unique_ptr<AST::FunctionParam> parse_function_param() {
+            if(tokenizer->get_token() != TokenKinds::Identifier) {
+                throw "[Error]: function param must start with a identifier";
+            }
+            std::string name = std::string(tokenizer->get_value());
+            tokenizer->next_token();
+            if(tokenizer->get_token() != TokenKinds::Colon) {
+                throw "[Error] function param must has a type";
+            }
+            tokenizer->next_token();
+            AST::Type type;
+            switch(tokenizer->get_token()) {
+            case TokenKinds::NumberKeyword:
+                type = AST::Type::Number;
+                break;
+            case TokenKinds::StringKeyword:
+                type = AST::Type::String;
+                break;
+            case TokenKinds::BoolKeyword:
+                type = AST::Type::Bool;
+                break;
+            default:
+                throw "[Error] function param must has a type";
+            }
+            tokenizer->next_token();
+            return std::make_unique<AST::FunctionParam>(name, type);
+        }
 /** =========================================================
  *  Statement
  * ==========================================================
 */
     std::unique_ptr<AST::BlockStatement> parse_block_statement() {
         if(tokenizer->get_token() != TokenKinds::BracesLeft) {
-            throw "";
+            throw "[Error]: block Statement Must Start With BracesLeft";
         }
         tokenizer->next_token();
         std::vector<std::unique_ptr<AST::ProgramItem>> body;
@@ -103,7 +181,7 @@ class Parser {
             body.push_back(std::move(program_item));
         }
         if(tokenizer->get_token() == TokenKinds::EOFToken) {
-            throw "";
+            throw "[Error]: block Statement Must End With BracesRight, But got EOF";
         }
         tokenizer->next_token();
         return std::make_unique<AST::BlockStatement>(std::move(body));

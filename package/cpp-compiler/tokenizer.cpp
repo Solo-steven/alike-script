@@ -107,7 +107,6 @@ class Tokenizer {
         void driver() {
             skip();
             char current_char = get_char();
-            //std::cout<< current_char << '\n';
             switch (current_char) {
                 /**
                  * 
@@ -398,7 +397,7 @@ class Tokenizer {
         void read_identifier_keyword() {
             // read utils space or changeline
             std::set<char> char_set{
-                ';',';',',','{','}', '[', ']', '(', ')',
+                ';',':',',','{','}', '[', ']', '(', ')',
                 '#', ',', '?',
                 '+', '-', '*', '/', '%',
                 '=', '>', '<', '|', '&', '!'
@@ -411,7 +410,6 @@ class Tokenizer {
             ) {
                 word += eat_char(1);
             }
-            std::cout << "Word:" << word << std::endl;
             // Keywords
             if(word == "while") {
                 currentToken = TokenKinds::WhileKeyword;
