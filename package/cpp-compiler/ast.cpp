@@ -281,7 +281,6 @@ class CallExpression: public Expression {
 /**
  * Statement 
 */
-class WhileStatement: public Statement {};
 class BlockStatement: public Statement {
     public:
     std::vector<std::unique_ptr<ProgramItem>> body;
@@ -303,6 +302,25 @@ class BlockStatement: public Statement {
                 std_str.append(",");
         }
         std_str.append("]}");
+        return std_str;
+    }
+};
+class WhileStatement: public Statement {
+    public:
+    std::unique_ptr<Expression> cond;
+    std::unique_ptr<BlockStatement> body;
+    WhileStatement(std::unique_ptr<Expression> cond,std::unique_ptr<BlockStatement> body):
+        cond(std::move(cond)), body(std::move(body)){}
+    void print() {
+        std::cout << "{\"type\":\"WhileStatement\",\"condition\":"<<cond->toString()<<",\"body\":"<<body->toString()<<"}";
+    }
+    std::string toString() {
+        const char format_str[] = "{\"type\":\"WhileStatement\",\"condition\":%s,\"body\":%s}";
+        size_t length = std::snprintf(nullptr, 0, format_str, cond->toString().c_str(), body->toString().c_str());
+        char *char_buffer = new char[length+1];
+        std::snprintf(char_buffer, length+1, format_str,cond->toString().c_str(), body->toString().c_str());
+        std::string std_str(char_buffer);
+        delete[] char_buffer;
         return std_str;
     }
 };

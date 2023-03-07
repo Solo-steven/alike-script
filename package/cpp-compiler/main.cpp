@@ -14,7 +14,7 @@ int main() {
         }
     }
     try{
-        auto parser = std::make_unique<Parser>("{ test(c, n) }");
+        auto parser = std::make_unique<Parser>("while(a +b > c) { c = a + b -d } ");
         auto item = parser->parse();
         item->print();
     } catch(char const* str) {
