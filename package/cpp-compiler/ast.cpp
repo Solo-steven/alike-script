@@ -28,10 +28,10 @@ std::string type_to_string(Type t) {
 class ProgramItem {
     public:
     virtual void print(){
-        std::cout << "ProgramItem";
+        std::cout << "{\"type\":\"ProgramItem\"}";
     }
     virtual std::string toString() {
-        return std::string("ProgramItem");
+        return std::string("{\"type\":\"ProgramItem\"}");
     }
 };
 class Statement: public ProgramItem {
@@ -65,13 +65,13 @@ class Program {
     public:
     std::vector<std::unique_ptr<ProgramItem>> body;
     void print() {
-        std::cout << "Program(body[";
+        std::cout << "{\"type\":\"Program\",\"body\":[";
         for(int i = 0 ; i < body.size() ; ++i) {
             body[i]->print();
             if(i != body.size()-1)
                 std::cout << ",";
         }
-        std::cout << "])";
+        std::cout << "]}";
     }
     
 };
@@ -87,12 +87,13 @@ class NumberLiteral: public Expression {
         this->value = value;
     }
     void print(){
-        std::cout << "NumberLiteral(" << value << ")";
+        std::cout << "{\"type\":\"NumberLiteral\",\"value\":\""<<value<<"\"}";   
     }
     std::string toString() {
-        size_t length = std::snprintf(nullptr,0, "NumberLiteral(%f)", value);
+        const char format_str[] = "{\"type\":\"NumberLiteral\",\"value\":\"%f\"}";  
+        size_t length = std::snprintf(nullptr,0, format_str, value);
         char* char_buffer = new char[length+1];
-        std::snprintf(char_buffer, length+1, "NumberLiteral(%f)", value);
+        std::snprintf(char_buffer, length+1, format_str, value);
         std::string std_str(char_buffer);
         delete[] char_buffer;
         return std_str;
@@ -104,12 +105,13 @@ class BoolLiteral: public Expression {
     BoolLiteral(){}
     BoolLiteral(bool value): value(value) {}
     void print(){
-        std::cout << "BoolLiteral(" << value << ")";
+        std::cout << "{\"type\":\"BoolLiteral\",\"value\":\""<<value<<"\"}"; 
     }
     std::string toString() {
-        size_t length = std::snprintf(nullptr, 0, "BoolLiteral(%d)", value);
+        const char format_str[] = "{\"type\":\"BoolLiteral\",\"value\":\"%d\"}";  
+        size_t length = std::snprintf(nullptr, 0, format_str, value);
         char* char_buffer = new char[length+1];
-        std::snprintf(char_buffer, length+1, "BoolLiteral(%d)", value);
+        std::snprintf(char_buffer, length+1, format_str, value);
         std::string std_str(char_buffer);
         delete[] char_buffer;
         return std_str;
@@ -130,12 +132,13 @@ class Identifier: public Expression {
     Identifier() {}
     Identifier(std::string name): name(name){}
     void print() {
-        std::cout << "Identifer(" << name  << ")";    
+        std::cout << "{\"type\":\"Identifer\",\"name\":\""<<name<<"\"}";   
     }
     std::string toString() {
-        size_t length = std::snprintf(nullptr, 0, "Identifier(%s)", name.c_str());
+        const char format_str[] = "{\"type\":\"Identifer\",\"name\":\"%s\"}";  
+        size_t length = std::snprintf(nullptr, 0, format_str, name.c_str());
         char *char_buffer = new char[length +1];
-        std::snprintf(char_buffer, length+1, "Identifier(%s)", name.c_str());
+        std::snprintf(char_buffer, length+1, format_str, name.c_str());
         std::string std_str(char_buffer);
         delete[] char_buffer;
         return std_str;
@@ -148,11 +151,11 @@ class UnaryExpression: public Expression {
     UnaryExpression() {}
     UnaryExpression(std::unique_ptr<Expression> argument, std::string op): argument(std::move(argument)), oper(op) {}
     void print() {
-        std::cout << "UnaryExpression("<<"argument:"<< argument->toString()<<",operator:"<<oper<<")";
+        std::cout <<"{\"type\":\"UnaryExpression\",\"argument\":"<<argument->toString()<<",\"operator\":\""<<oper<<"\"}";  
     }
     std::string toString() {
+        const char format_str[] = "{\"type\":\"UnaryExpression\",\"argument\":%s,\"operator\":\"%s\"}";
         std::string argument_string = argument->toString();
-        char format_str[] = "UnaryExpression(argument:%s,operator:%s)";
         size_t length = std::snprintf(nullptr, 0 , format_str, argument_string.c_str(), oper.c_str());
         char* char_buffer = new char[length+1];
         std::snprintf(char_buffer, length+1, format_str, argument_string.c_str(), oper.c_str());
@@ -171,12 +174,12 @@ class BinaryExpression: public Expression {
     BinaryExpression(std::unique_ptr<Expression> left, std::unique_ptr<Expression> right, std::string op): 
         left(std::move(left)), right(std::move(right)), oper(op) {}
     void print() {
-        std::cout << "BinaryExpression(left:"<<left->toString() << ",right:" << right->toString()<< ",operator:"<< oper <<")";
+        std::cout << "{\"type\":\"BinaryExpression\",\"left\":"<<left->toString()<<",\"right\":"<<right->toString()<<",\"operator\":\""<<oper<<"\"}";
     }
     std::string toString() {
+        const char format_str[]=  "{\"type\":\"BinaryExpression\",\"left\":%s,\"right\":%s,\"operator\":\"%s\"}";
         std::string left_string = left->toString();
         std::string right_string = right->toString();
-        char format_str[] = "BinaryExpression(left:%s,right:%s,operator:%s)";
         size_t length = std::snprintf(nullptr, 0, format_str, left_string.c_str(), right_string.c_str(), oper.c_str());
         char *char_buffer = new char[length+1];
         std::snprintf(char_buffer, length+1,  format_str, left_string.c_str(), right_string.c_str(), oper.c_str());
@@ -194,13 +197,13 @@ class ConditionalExpression: public Expression {
     ConditionalExpression(std::unique_ptr<Expression> cond, std::unique_ptr<Expression> conseq, std::unique_ptr<Expression> alter):
         cond(std::move(cond)), conseq(std::move(conseq)), alter(std::move(alter)){}
     void print() {
-        std::cout << "ConditionalExpression(condition:"<< cond->toString() << ",consequnce:" << conseq->toString() << ",alter:" << alter->toString()<<")";
+        std::cout << "{\"type\":\"ConditionalExpression\",\"conditional\":"<<cond->toString()<<",\"consequnce\":"<<conseq->toString()<<",\"alter\":"<<alter->toString()<<"}";
     }
     std::string toString() {
         std::string cond_string = cond->toString();
         std::string conseq_string = conseq->toString();
         std::string alter_string = alter->toString();
-        char format_str[] = "ConditionalExpression(conditional:%s,consequnce:%s,alter:%s";
+        char format_str[] = "{\"type\":\"ConditionalExpression\",\"conditional\":%s,\"consequnce\":%s,\"alter\":%s}";
         size_t length = std::snprintf(nullptr, 0, format_str, cond_string.c_str(), conseq_string.c_str(), alter_string.c_str());
         char *char_buffer = new char[length+1];
         std::snprintf(char_buffer, length+1,  format_str, cond_string.c_str(), conseq_string.c_str(), alter_string.c_str());
@@ -221,12 +224,12 @@ class AssigmentExpression: public Expression {
         this->right = std::move(right);
     }
     void print() {
-        std::cout << "AssigmentExpression(left:"<<left->toString() << ",right:" << right->toString() <<")";
+        std::cout << "{\"type\":\"AssignmentExpression\",\"left\":"<<left->toString()<<",\"right\":"<<right->toString()<<"}";
     }
     std::string toString() {
         std::string left_string = left->toString();
         std::string right_string = right->toString();
-        char format_str[] = "AssigmentExpression(left:%s,right:%s,operator:%s)";
+        char format_str[] ="{\"type\":\"AssigmentExpression\",\"left\":%s,\"right\":%s}";
         size_t length = std::snprintf(nullptr, 0, format_str, left_string.c_str(), right_string.c_str());
         char *char_buffer = new char[length+1];
         std::snprintf(char_buffer, length+1,  format_str, left_string.c_str(), right_string.c_str());
@@ -244,8 +247,36 @@ class SequnceExpression: public Expression {
 };
 class CallExpression: public Expression {
     public:
-        std::string callee;
-        std::vector<std::unique_ptr<Expression>> params;
+    std::string callee;
+    std::vector<std::unique_ptr<Expression>> params;
+    CallExpression(std::string callee, std::vector<std::unique_ptr<Expression>> params):
+        callee(callee), params(std::move(params)) {};
+    void print() {
+        std::cout << "{\"type\":\"CallExpression\",\"callee\":\""<<callee<<"\",\"params\":[";
+        for(int i = 0 ; i < params.size();++i) {
+            std::cout << params[i]->toString();
+            if(params.size() -1 != i) {
+                std::cout<<",";
+            }
+        }
+        std::cout<<"]}";
+    }
+    std::string toString() {
+        const char format_str[] = "{\"type\":\"CallExpression\",\"callee\":\"%s\",\"params\":[";
+        size_t length = std::snprintf(nullptr, 0 , format_str, callee.c_str());
+        char *char_buffer = new char[length+1];
+        std::snprintf(char_buffer, length+1, format_str, callee.c_str());
+        std::string std_str(char_buffer);
+        delete[] char_buffer;
+        for(int i = 0 ; i < params.size();++i) {
+            std_str.append(params[i]->toString());
+            if(params.size() -1 != i) {
+                std_str.append(",");
+            }
+        }
+        std_str.append("]}");
+        return std_str;
+    }
 };
 /**
  * Statement 
@@ -256,17 +287,22 @@ class BlockStatement: public Statement {
     std::vector<std::unique_ptr<ProgramItem>> body;
     BlockStatement(std::vector<std::unique_ptr<ProgramItem>> body): body(std::move(body)) {}
     void print() {
-        std::cout << "BlockStatement(body:[";
+        std::cout << "{\"type\":\"BlockStatement\",\"body\":[";
         for(int i = 0 ; i < body.size() ; ++i) {
             std::cout << body[i]->toString();
+            if(i!= body.size()-1) 
+                std::cout <<",";
         } 
-        std::cout << "])";
+        std::cout << "]}";
     }
     std::string toString() {
-        std::string std_str;
+        std::string std_str("{\"type\":\"BlockStatement\",\"body\":[");
         for(int i = 0 ; i < body.size() ; ++i) {
             std_str.append(body[i]->toString());
+            if(i!= body.size()-1) 
+                std_str.append(",");
         }
+        std_str.append("]}");
         return std_str;
     }
 };
@@ -283,16 +319,16 @@ class VariableDelaration: public Declaration {
     VariableDelaration(std::string name, Type type, std::unique_ptr<Expression> init):
         name(name), type(type), init(std::move(init)) {}
     void print() {
-        std::cout << "VariableDeclaration(name:("<<name<<"),type:(" << type_to_string(type) << ")";
+        std::cout<<"{\"type\":\"VariableDeclaration\",\"name\":\""<<name<<"\",\"variableType\":\""<<type_to_string(type)<<"\",";
         if(init.get() == nullptr) {
-            std::cout << ",init:()";
+            std::cout << "\"init\":\"\"";
         }else {
-            std::cout << ".init(" << init->toString() << ")";
-        }
-        std::cout << ")";
+            std::cout << "\"init\":" <<init->toString();
+        }    
+        std::cout<<"}";
     }
     std::string toString() {
-        char format_str[] = "VariableDelcaration(name:(%s),type:(%s),init:(%s))";
+        char format_str[] = "{\"type\":\"VariableDeclaration\",\"name\":\"%s\",\"variableType\":\"%s\",\"init\":%s}";
         size_t length = std::snprintf(
             nullptr, 0, format_str, 
             name.c_str(), type_to_string(type).c_str(), init.get() == nullptr ? "": init->toString().c_str()
@@ -313,10 +349,10 @@ class FunctionParam {
     Type return_type;
     FunctionParam(std::string name, Type return_type): name(name), return_type(return_type) {}
     void print() {
-        std::cout << "param(name:("<<name<<"),type:("<<type_to_string(return_type)<<"))";
+        std::cout<<"{\"type\":\"FunctionParam\", \"name\":\""<<name<<"\",\"paramType\":\""<<type_to_string(return_type)<<"\"}";
     }
     std::string toString() {
-        char format_str[] = "param(name:(%s),type:(%s))";
+        char format_str[] = "{\"type\":\"FunctionParam\", \"name\":\"%s\",\"paramType\":\"%s\"}";
         size_t length = std::snprintf(nullptr, 0 , format_str, name.c_str(), type_to_string(return_type).c_str());
         char *char_buffer = new char[length+1];
         std::snprintf(char_buffer, length+1, format_str, name.c_str(), type_to_string(return_type).c_str());
@@ -336,18 +372,32 @@ class FunctionDeclaration: public Declaration {
         std::vector<std::unique_ptr<FunctionParam>> params,
         std::unique_ptr<BlockStatement> body
     ): name(name), return_type(type), params(std::move(params)), body(std::move(body)) {}
-
     void print() {
-        std::cout << "FunctionDeclaration(name:("<<name<<"),"<<"return_type:("<<type_to_string(return_type)<<"),params:[";
+        std::cout<<"{\"type\":\"FunctionDelcaration\",\"name\":\""<<name<<"\",\"returnType\":\""<< type_to_string(return_type) <<"\",\"params\":[";
         for(int i = 0 ; i< params.size() ; ++i ){
             params[i]->print();
             if(i != params.size()-1)
                 std::cout << ",";
         }
-        std::cout<< "],body:["<< body->toString() << "]";
+        std::cout<< "],\"body\":"<< body->toString() << "}";
+    }
+    std::string toString() {
+        const char format_str[]= "{\"type\":\"FunctionDelcaration\",\"name\":\"%s\",\"returnType\":\"%s\",\"params\":[";
+        size_t length = std::snprintf(nullptr, 0, format_str, name.c_str(), type_to_string(return_type).c_str());
+        char *char_buffer = new char[length+1];
+        std::snprintf(char_buffer, length+1,format_str, name.c_str(), type_to_string(return_type).c_str());
+        std::string std_str(char_buffer);
+        delete[] char_buffer;
+        for(int i = 0 ; i < params.size() ; ++i) {
+            std_str.append(params[i]->toString());
+            if(i!= params.size()-1) 
+                std_str.append(",");
+        }
+        std_str.append("],\"body\":");
+        std_str.append(body->toString());
+        std_str.append("}");
+        return std_str;
     }
 };
 } // End Namesacpe AST
-
-
 #endif

@@ -282,6 +282,9 @@ class Parser {
             case TokenKinds::Identifier: {
                 auto name = tokenizer->get_value();
                 tokenizer->next_token();
+                if(tokenizer->get_token() == TokenKinds::ParenthesesLeft) {
+                    return parse_call_expression(name);
+                }
                 return std::make_unique<AST::Identifier>(name);
             }
             case TokenKinds::BoolLiteral: {
@@ -316,5 +319,31 @@ class Parser {
                throw "[Error]: Unexecpted Primary Expression";
             }  
         }
-
+        std::unique_ptr<AST::Expression> parse_call_expression(std::string callee_name) {
+            if(tokenizer->get_token() != TokenKinds::ParenthesesLeft) {
+                throw "";
+            }
+            tokenizer->next_token();
+            std::vector<std::unique_ptr<AST::Expression>> params;
+            bool is_start = false;
+            while(
+                tokenizer->get_token() != TokenKinds::ParenthesesRight &&
+                tokenizer->get_token() != TokenKinds::EOFToken  
+            ) {
+                if(!is_start) {
+                    is_start = true;
+                }else {
+                    if(tokenizer->get_token() != TokenKinds::Comma) {
+                        throw "[Error]: CallExpression Params Must separate By Comma";
+                    }
+                    tokenizer->next_token();
+                }
+                params.push_back(parse_conditional_expression());
+            }
+            if(tokenizer->get_token() == TokenKinds::EOFToken) {
+                throw "[Error]: CallExpression Must End up With ParantheseRight, But got EOF";
+            }
+            tokenizer->next_token();
+            return std::make_unique<AST::CallExpression>(callee_name, std::move(params));
+        }
 };
